@@ -16,6 +16,9 @@ concurrency:
 
 jobs:
   set-matrix:
+    # kernel-patches/bpf-rc uses github-hosted runners,
+    # which currently can't run BPF CI workflows directly
+    if: ${{ github.repository != 'kernel-patches/bpf-rc' }}
     runs-on: ubuntu-slim
     permissions: read-all
     outputs:
@@ -76,3 +79,9 @@ jobs:
       is_netdev: ${{ matrix.is_netdev }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  test-build-commands:
+    name: Test build commands
+    uses: ./.github/workflows/test-build-commands.yml
+    with:
+      download_sources: ${{ github.repository == 'kernel-patches/vmtest' }}
